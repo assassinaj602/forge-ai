@@ -1,0 +1,31 @@
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import settings
+from app.api.v1.auth import router as auth_router
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Lifespan hook - Database schema management is strictly handled by Alembic migrations
+    yield
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health", tags=["Health"])
+async def health_check():
+    return {"status": "ok", "project": settings.PROJECT_NAME}
+
+app.include_router(auth_router, prefix=settings.API_V1_STR)

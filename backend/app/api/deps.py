@@ -17,10 +17,9 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    payload = decode_token(token)
-    if payload is None:
-        raise credentials_exception
     
+    # decode_token handles ExpiredSignatureError and JWTError exceptions
+    payload = decode_token(token)
     user_id: str = payload.get("sub")
     if user_id is None:
         raise credentials_exception
@@ -31,6 +30,9 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
     if not user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user account"
+        )
         
     return user

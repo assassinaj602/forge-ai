@@ -11,6 +11,7 @@ from alembic import context
 from app.core.config import settings
 from app.db.session import Base
 import app.db.models  # Ensure models are imported for metadata registration
+import app.db.models_usage
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

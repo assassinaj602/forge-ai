@@ -83,9 +83,9 @@ python -m pytest
 ## Features Roadmap
 - [x] Repository Foundation & Architecture
 - [x] Milestone 1: Authentication Core, Alembic Migrations, Docker & User Tenant Isolation
-- [ ] Milestone 2: Multi-Model AI Chat & Streaming Engine
-- [ ] Milestone 3: Document Processing & RAG Knowledge Engine
-- [ ] Milestone 4: Tool Calling & Dynamic Tool Framework
+- [x] Milestone 2: Multi-Model AI Chat & Streaming Engine
+- [x] Milestone 3: Document Processing & RAG Knowledge Engine
+- [x] Milestone 4: Tool Calling & Dynamic Tool Framework
 - [ ] Milestone 5: Autonomous AI Agents Framework
 - [ ] Milestone 6: AI Evaluation, Observability & Cost Tracking
 - [ ] Milestone 7: Full Stack UI Dashboard & Production Packaging

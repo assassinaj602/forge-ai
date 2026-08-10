@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class LLMMessage(BaseModel):
     role: str  # user, assistant, system, tool
     content: str
+    tool_calls: Optional[List[Dict[str, Any]]] = None
 
 class LLMResponse(BaseModel):
     content: str
@@ -14,6 +15,7 @@ class LLMResponse(BaseModel):
     completion_tokens: int = 0
     total_tokens: int = 0
     latency_ms: int = 0
+    tool_calls: Optional[List[Dict[str, Any]]] = None
 
 class BaseLLMProvider(ABC):
     @abstractmethod
@@ -22,6 +24,7 @@ class BaseLLMProvider(ABC):
         messages: List[LLMMessage],
         system_prompt: Optional[str] = None,
         model: Optional[str] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
         **kwargs: Any
     ) -> LLMResponse:
         pass
@@ -32,6 +35,7 @@ class BaseLLMProvider(ABC):
         messages: List[LLMMessage],
         system_prompt: Optional[str] = None,
         model: Optional[str] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
         **kwargs: Any
     ) -> AsyncGenerator[str, None]:
         pass

@@ -17,8 +17,10 @@ class MockLLMProvider(BaseLLMProvider):
         last_message_lower = last_message.lower()
 
         tool_calls = None
-        # Smart tool call intent detection
-        if tools:
+        # Smart tool call intent detection (check if tool result is not already in history)
+        has_tool_result = any("Action: " in m.content for m in messages if m.content)
+        
+        if tools and not has_tool_result:
             tool_names = [t.get("function", {}).get("name") for t in tools if isinstance(t, dict)]
             if ("calculate" in last_message_lower or "+" in last_message_lower or "*" in last_message_lower) and "calculator" in tool_names:
                 tool_calls = [{

@@ -13,6 +13,7 @@ from app.db.session import Base
 import app.db.models  # Ensure models are imported for metadata registration
 import app.db.models_usage
 import app.db.models_rag
+import app.db.models_agent
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

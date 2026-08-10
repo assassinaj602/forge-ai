@@ -8,6 +8,7 @@ from app.api.v1.conversations import router as conv_router
 from app.api.v1.chat import router as chat_router
 from app.api.v1.knowledge import router as knowledge_router
 from app.api.v1.tools import router as tools_router
+from app.api.v1.agents import router as agents_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -37,3 +38,4 @@ app.include_router(conv_router, prefix=settings.API_V1_STR)
 app.include_router(chat_router, prefix=settings.API_V1_STR)
 app.include_router(knowledge_router, prefix=settings.API_V1_STR)
 app.include_router(tools_router, prefix=settings.API_V1_STR)
+app.include_router(agents_router, prefix=settings.API_V1_STR)

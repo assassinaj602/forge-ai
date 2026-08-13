@@ -31,12 +31,23 @@ services:
       ENVIRONMENT: production
       DATABASE_URL: postgresql+asyncpg://postgres:postgrespassword@postgres:5432/forgeai
       SECRET_KEY: change-this-to-a-secure-random-secret-key-in-production-min-32-chars
-      BACKEND_CORS_ORIGINS: "http://localhost:3000,http://localhost:5173,http://localhost:8000"
+      BACKEND_CORS_ORIGINS: "http://localhost:3000,http://localhost:5173,http://localhost:8000,http://localhost:80"
     depends_on:
       postgres:
         condition: service_healthy
     command: >
       sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: forgeai_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

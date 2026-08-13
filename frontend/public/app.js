@@ -64,6 +64,10 @@ export function navigateTo(route) {
 
 import { renderAuthView } from "./views/auth.js";
 import { renderDashboardView } from "./views/dashboardView.js";
+import { renderChatView } from "./views/chatView.js";
+import { renderKnowledgeView } from "./views/knowledgeView.js";
+import { renderAgentsView } from "./views/agentsView.js";
+import { renderEvalObsView } from "./views/evalObsView.js";
 
 export function renderApp() {
   const container = document.getElementById("app");
@@ -71,6 +75,12 @@ export function renderApp() {
     container.innerHTML = renderAuthView();
     return;
   }
+
+  let mainViewHtml = renderDashboardView();
+  if (state.activeRoute === "chat") mainViewHtml = renderChatView();
+  else if (state.activeRoute === "knowledge") mainViewHtml = renderKnowledgeView();
+  else if (state.activeRoute === "agents") mainViewHtml = renderAgentsView();
+  else if (state.activeRoute === "evaluations" || state.activeRoute === "observability") mainViewHtml = renderEvalObsView();
 
   container.innerHTML = `
     <div class="app-container">
@@ -88,12 +98,12 @@ export function renderApp() {
           <div class="nav-item ${state.activeRoute === 'observability' ? 'active' : ''}" onclick="window.navigateTo('observability')">Observability</div>
         </nav>
         <div class="user-profile">
-          <span>${state.user ? state.user.email : 'User'}</span>
+          <span>User Account</span>
           <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="window.logout()">Logout</button>
         </div>
       </aside>
       <main class="main-content" id="main-view">
-        ${renderDashboardView()}
+        ${mainViewHtml}
       </main>
     </div>
   `;

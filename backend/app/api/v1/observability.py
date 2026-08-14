@@ -10,6 +10,8 @@ from app.schemas.eval import ObservabilityMetricsResponse
 
 router = APIRouter(prefix="/observability", tags=["Observability"])
 
+from app.db.models_cache import SemanticCacheEntry
+
 @router.get("/metrics", response_model=ObservabilityMetricsResponse)
 async def get_observability_metrics(
     current_user: User = Depends(get_current_user),
@@ -21,12 +23,19 @@ async def get_observability_metrics(
     )
     logs = result.scalars().all()
 
-    total_requests = len(logs)
+    # Query Cache Hits
+    cache_result = await db.execute(
+        select(func.sum(SemanticCacheEntry.hit_count))
+        .where(SemanticCacheEntry.user_id == current_user.id)
+    )
+    total_cache_hits = cache_result.scalar() or 0
+
+    total_requests = len(logs) + total_cache_hits
     total_prompt = sum(l.prompt_tokens for l in logs)
     total_completion = sum(l.completion_tokens for l in logs)
     total_tokens = sum(l.total_tokens for l in logs)
     total_cost = sum(l.estimated_cost for l in logs)
-    avg_latency = (sum(l.latency_ms for l in logs) / total_requests) if total_requests > 0 else 0.0
+    avg_latency = (sum(l.latency_ms for l in logs) / len(logs)) if len(logs) > 0 else 0.0
 
     # Provider breakdown
     provider_breakdown = {}

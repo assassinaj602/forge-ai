@@ -11,6 +11,7 @@ from app.api.v1.tools import router as tools_router
 from app.api.v1.agents import router as agents_router
 from app.api.v1.evaluations import router as eval_router
 from app.api.v1.observability import router as obs_router
+from app.api.v1.mcp import router as mcp_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,3 +44,4 @@ app.include_router(tools_router, prefix=settings.API_V1_STR)
 app.include_router(agents_router, prefix=settings.API_V1_STR)
 app.include_router(eval_router, prefix=settings.API_V1_STR)
 app.include_router(obs_router, prefix=settings.API_V1_STR)
+app.include_router(mcp_router, prefix=settings.API_V1_STR)

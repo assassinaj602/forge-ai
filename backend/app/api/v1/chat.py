@@ -69,15 +69,48 @@ async def chat_completions(
     db.add(user_msg)
     await db.commit()
 
-    # Build message context
-    history = [LLMMessage(role=m.role, content=m.content) for m in conv.messages]
-    history.append(LLMMessage(role="user", content=req.message))
+    # 1. Semantic Cache Lookup
+    cached_entry = await SemanticCacheService.get_cached_response(
+        db=db,
+        user_id=current_user.id,
+        prompt=req.message,
+        provider=req.provider,
+        model=req.model
+    )
+
+    if cached_entry:
+        asst_msg = Message(
+            conversation_id=conv.id,
+            role="assistant",
+            content=f"[Cached Response] {cached_entry.response_content}",
+            tokens_used=0,
+            latency_ms=5
+        )
+        db.add(asst_msg)
+        await db.commit()
+        return {
+            "conversation_id": conv.id,
+            "message": {"role": "assistant", "content": asst_msg.content},
+            "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost": 0.0},
+            "latency_ms": 5,
+            "cached": True
+        }
 
     provider = get_llm_provider(req.provider)
     llm_resp = await provider.generate(
         messages=history,
         system_prompt=req.system_prompt or conv.system_prompt,
         model=req.model or conv.model
+    )
+
+    # 2. Store in Semantic Cache
+    await SemanticCacheService.cache_response(
+        db=db,
+        user_id=current_user.id,
+        prompt=req.message,
+        response_content=llm_resp.content,
+        provider=req.provider,
+        model=req.model
     )
 
     # Save assistant message

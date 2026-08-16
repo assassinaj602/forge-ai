@@ -26,7 +26,13 @@ class OpenAIProvider(BaseLLMProvider):
         if system_prompt:
             formatted_messages.append({"role": "system", "content": system_prompt})
         for m in messages:
-            formatted_messages.append({"role": m.role, "content": m.content})
+            if m.image_url or m.image_base64:
+                content_parts = [{"type": "text", "text": m.content}]
+                img_src = m.image_url if m.image_url else f"data:image/jpeg;base64,{m.image_base64}"
+                content_parts.append({"type": "image_url", "image_url": {"url": img_src}})
+                formatted_messages.append({"role": m.role, "content": content_parts})
+            else:
+                formatted_messages.append({"role": m.role, "content": m.content})
 
         start_time = time.time()
         async with httpx.AsyncClient() as client:

@@ -37,6 +37,8 @@ class ConversationResponse(ConversationBase):
 class ChatMessageRequest(BaseModel):
     conversation_id: Optional[str] = None
     message: str
+    image_url: Optional[str] = None
+    image_base64: Optional[str] = None
     provider: Optional[str] = "mock"
     model: Optional[str] = "mock-v1"
     system_prompt: Optional[str] = None

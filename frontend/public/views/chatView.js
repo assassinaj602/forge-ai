@@ -54,8 +54,10 @@ export function renderChatView() {
           </div>
         </div>
       </div>
-      <div style="display: flex; gap: 0.75rem;">
-        <input type="text" id="chat-input" class="input-field" placeholder="Ask ForgeAI assistant..." style="margin-bottom: 0;" />
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <input type="file" id="chat-image-input" accept="image/*" style="display: none;" />
+        <button class="btn" style="background: var(--bg-dark); border: 1px solid var(--border-card);" onclick="document.getElementById('chat-image-input').click()">📷 Image</button>
+        <input type="text" id="chat-input" class="input-field" placeholder="Ask ForgeAI assistant or attach image..." style="margin-bottom: 0;" />
         <button id="send-chat-btn" class="btn">Send</button>
       </div>
     </div>

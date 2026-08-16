@@ -162,8 +162,9 @@ async def chat_stream(
     db.add(user_msg)
     await db.commit()
 
+    # Build message context
     history = [LLMMessage(role=m.role, content=m.content) for m in conv.messages]
-    history.append(LLMMessage(role="user", content=req.message))
+    history.append(LLMMessage(role="user", content=req.message, image_url=req.image_url, image_base64=req.image_base64))
 
     provider = get_llm_provider(req.provider)
 

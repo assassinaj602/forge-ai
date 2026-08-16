@@ -43,8 +43,18 @@ class MockLLMProvider(BaseLLMProvider):
 
         if tool_calls:
             response_text = f"Decided to invoke tool: {tool_calls[0]['name']}."
+        # Detect Multimodal Vision payloads
         else:
-            response_text = f"ForgeAI Assistant: Received message '{last_message}'."
+            has_image = any(m.image_url or m.image_base64 for m in messages)
+            if has_image:
+                img_type = "Image URL" if any(m.image_url for m in messages) else "Base64 Image Data"
+                response_text = (
+                    f"[Multimodal Vision Analysis] Processed input image ({img_type}). "
+                    f"Visual Analysis of '{last_message}': The uploaded image depicts a technical architecture diagram "
+                    "with clear client-server boundaries, database connection flows, and decoupled microservice components."
+                )
+            else:
+                response_text = f"ForgeAI Assistant: Received message '{last_message}'."
 
         latency_ms = int((time.time() - start_time) * 1000)
         prompt_tokens = sum(len(m.content.split()) for m in messages)

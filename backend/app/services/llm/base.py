@@ -5,6 +5,8 @@ from pydantic import BaseModel
 class LLMMessage(BaseModel):
     role: str  # user, assistant, system, tool
     content: str
+    image_url: Optional[str] = None
+    image_base64: Optional[str] = None
     tool_calls: Optional[List[Dict[str, Any]]] = None
 
 class LLMResponse(BaseModel):

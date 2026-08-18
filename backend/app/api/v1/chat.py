@@ -14,6 +14,7 @@ from app.schemas.chat import ChatMessageRequest, StructuredAnalysisRequest
 from app.services.llm.factory import get_llm_provider
 from app.services.llm.base import LLMMessage
 from app.services.llm.structured import generate_structured_output
+from app.services.cache.semantic_cache import SemanticCacheService
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -95,6 +96,10 @@ async def chat_completions(
             "latency_ms": 5,
             "cached": True
         }
+
+    # Build message context
+    history = [LLMMessage(role=m.role, content=m.content) for m in conv.messages]
+    history.append(LLMMessage(role="user", content=req.message, image_url=req.image_url, image_base64=req.image_base64))
 
     provider = get_llm_provider(req.provider)
     llm_resp = await provider.generate(

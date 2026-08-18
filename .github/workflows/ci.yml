@@ -1,0 +1,72 @@
+name: ForgeAI CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-tests:
+    name: Run Backend Test Suite & Migrations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Backend Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Verify Alembic Database Migrations Dry-Run
+        env:
+          ENVIRONMENT: testing
+          DATABASE_URL: "sqlite+aiosqlite:///./ci_test.db"
+        run: |
+          cd backend
+          alembic stamp head
+          alembic upgrade head
+
+      - name: Execute Pytest Suite across all Modules
+        env:
+          ENVIRONMENT: testing
+          SECRET_KEY: ci-test-secret-key-min-32-chars-long
+        run: |
+          cd backend
+          python -m pytest -v
+
+  docker-build:
+    name: Verify Docker Container Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: forgeai-backend:latest
+
+      - name: Build Frontend Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: false
+          tags: forgeai-frontend:latest

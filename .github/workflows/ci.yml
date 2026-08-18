@@ -67,7 +67,7 @@ jobs:
           python -m pytest -v
 
   docker-build:
-    name: Verify Docker Container Build
+    name: Verify Docker Container Builds
     runs-on: ubuntu-latest
 
     steps:
@@ -84,6 +84,8 @@ jobs:
           file: ./backend/Dockerfile
           push: false
           tags: forgeai-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build Frontend Docker Image
         uses: docker/build-push-action@v5
@@ -92,3 +94,5 @@ jobs:
           file: ./frontend/Dockerfile
           push: false
           tags: forgeai-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

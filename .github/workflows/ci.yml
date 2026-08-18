@@ -30,7 +30,7 @@ jobs:
       - name: Verify Alembic Database Migrations Dry-Run
         env:
           ENVIRONMENT: testing
-          DATABASE_URL: "sqlite+aiosqlite:///./ci_test.db"
+          DATABASE_URL: "sqlite+aiosqlite:///./ci_migration_test.db"
         run: |
           cd backend
           alembic stamp head

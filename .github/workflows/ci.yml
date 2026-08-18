@@ -96,3 +96,25 @@ jobs:
           tags: forgeai-frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  security-scan:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11 Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Safety Auditor
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit
+
+      - name: Audit Backend Dependencies
+        run: |
+          pip-audit -r backend/requirements.txt || true

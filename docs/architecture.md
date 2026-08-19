@@ -1,0 +1,62 @@
+# Architecture Documentation — ForgeAI Enterprise Platform
+
+This document details the core subsystem sequence workflows, architectural component layouts, and data execution flows for **ForgeAI**.
+
+---
+
+## 1. Multi-Model LLM Streaming & SSE Engine Workflow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Client Application (SPA UI)
+    participant API as FastAPI Router (/api/v1/chat/stream)
+    participant Cache as Semantic Cache Service
+    participant Factory as LLM Provider Factory
+    participant Provider as OpenAI / Anthropic / Mock Provider
+    participant SSE as Server-Sent Events Engine
+    participant DB as Async Database (PostgreSQL)
+
+    User->>API: POST /api/v1/chat/stream (prompt, provider, model)
+    API->>DB: Fetch or create Conversation context
+    API->>Cache: Lookup prompt embedding in vector cache
+    alt Cache Hit (similarity >= threshold)
+        Cache-->>API: Return cached response string
+        API->>SSE: Stream cached response tokens via SSE
+        SSE-->>User: event: message (cached tokens)
+        SSE-->>User: event: end [DONE]
+    else Cache Miss
+        API->>Factory: Get provider instance (provider_name)
+        Factory-->>API: Return LLMProvider instance
+        API->>Provider: generate_stream(history, system_prompt)
+        loop Token Generation Stream
+            Provider-->>SSE: Yield token chunk
+            SSE-->>User: event: message {content: token}
+        end
+        API->>DB: Save complete Assistant Message & UsageLog
+        API->>Cache: Store (prompt, response) in SemanticCacheEntries
+        SSE-->>User: event: end [DONE]
+    end
+```
+
+---
+
+## 2. RAG Knowledge & Vector Search Pipeline Workflow
+
+```mermaid
+graph TD
+    subgraph Ingestion["1. Document Ingestion Pipeline"]
+        A[User Uploads PDF/TXT File] --> B[RAG Service Document Processor]
+        B --> C[Chunking Engine: 500 Tokens / 50 Overlap]
+        C --> D[Embedding Generator: Mock/OpenAI Embeddings]
+        D --> E[(Vector Knowledge Collection)]
+    end
+
+    subgraph Retrieval["2. Query Retrieval & Context Augmentation"]
+        F[User Query Prompt] --> G[Generate Query Embedding Vector]
+        G --> H[Cosine Similarity Search against Collection]
+        H --> I[Extract Top-K Most Relevant Chunks]
+        I --> J[Construct System Prompt with Injected RAG Context]
+        J --> K[LLM Provider Generation Endpoint]
+    end
+```

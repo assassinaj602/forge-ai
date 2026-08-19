@@ -89,4 +89,26 @@ classDiagram
     RAGService --> KnowledgeCollection : Manages
     KnowledgeCollection "1" *-- "many" DocumentChunk : Contains
 ```
+
+---
+
+## 4. ReAct Autonomous Agent Loop State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle: Agent Initialized
+    Idle --> Reason: Execution Triggered (Goal Prompt)
+    
+    state ReAct_Iteration_Loop {
+        Reason --> Action: Formulate Thought & Pick Tool Call
+        Action --> Observe: Execute Registered Tool
+        Observe --> SafeguardCheck: Check Iteration Count (< max_steps)
+        SafeguardCheck --> Reason: Continue Reasoning (< max_steps)
+    }
+
+    SafeguardCheck --> Terminated: Exceeded Safeguard Max Steps
+    Reason --> Completed: Final Answer Produced
+    Completed --> [*]
+    Terminated --> [*]
+```
 ```

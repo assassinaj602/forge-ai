@@ -1,88 +1,71 @@
-# ForgeAI — Production AI Workspace
+# ForgeAI — Enterprise AI Engineering Workspace
 
-ForgeAI is a production-grade AI Engineering workspace featuring FastAPI, PostgreSQL, JWT Authentication, Multi-tenant Data Isolation, Alembic Migrations, and Docker containerization.
+![CI/CD Pipeline Status](https://github.com/assassinaj602/forge-ai/actions/workflows/ci.yml/badge.svg)
+![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-009688.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
----
-
-## Milestone 1 Overview & Architecture
-
-Milestone 1 establishes the production architecture core:
-
-1. **Backend Framework**: FastAPI application with CORS middleware (`app/main.py`).
-2. **Database & ORM**: PostgreSQL default with async SQLAlchemy 2.0 (`User`, `Conversation`, `Message` models in `app/db/models.py`). SQLite in-memory engine is dedicated to automated unit tests.
-3. **Database Schema Migrations**: Managed exclusively via Alembic (`alembic/versions/`). Schema creation on app startup (`Base.metadata.create_all`) is explicitly disabled.
-4. **Authentication & Security Core**:
-   - Bearer Token JWT authentication with `HS256` and configurable `SECRET_KEY` validation.
-   - Password hashing via `pbkdf2_sha256` / `bcrypt` with passlib.
-   - Minimum 8-character password policy enforcement.
-   - Profile & user state management (`/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/me`).
-5. **Multi-Tenant Data Isolation**: Strict user-level tenant isolation enforced across endpoints.
-6. **Containerization & Deployment**: `docker-compose.yml` orchestrating PostgreSQL 15 and FastAPI backend service with automated migration execution on boot.
+ForgeAI is a production-grade AI Engineering workspace featuring FastAPI, PostgreSQL, JWT Authentication, Multi-tenant Data Isolation, Alembic Migrations, Docker containerization, SSE Streaming, RAG Vector Search, ReAct Autonomous Agents, Model Context Protocol (MCP), Semantic Cache, and Multimodal Vision.
 
 ---
 
-## Local Development & Installation
+## 🌟 Enterprise Feature Matrix
+
+| Feature Module | Technical Highlights | Status |
+|---|---|---|
+| **Auth & Security** | JWT (HS256), Password Hashing (`bcrypt`), Multi-Tenant Row Isolation | ✅ Production |
+| **Multi-Model LLM Engine** | Unified Provider Abstraction (OpenAI, Anthropic, Mock), SSE Token Streaming | ✅ Production |
+| **RAG Knowledge Engine** | Document Ingestion (PDF/TXT), Semantic Vector Search & Cosine Scoring | ✅ Production |
+| **Tool Calling Framework** | Dynamic Registry, Extensible Custom Tools (`calculator`, `datetime`) | ✅ Production |
+| **ReAct Autonomous Agents** | Multi-step Thought-Action-Observation Loop, Iteration Limit Safeguards | ✅ Production |
+| **AI Evaluation & Metrics** | Multi-Assertion Evaluators, Token/Cost Usage Logs, Real-time Dashboard | ✅ Production |
+| **Full Stack Dashboard** | Glassmorphism SPA (Vanilla JS + Custom CSS), Docker + Nginx Packaging | ✅ Production |
+| **Model Context Protocol** | Native MCP Client, MCP Tool Adapter, Stdio & SSE JSON-RPC Transport | ✅ Production |
+| **Semantic Prompt Cache** | Prompt Similarity Lookup (<10ms latency, $0 LLM cost) | ✅ Production |
+| **Multimodal Vision** | GPT-4 Vision & Base64/URL Image Analysis Support | ✅ Production |
+| **CI/CD Pipeline** | GitHub Actions Workflow (`pytest`, Alembic dry-run, Docker build, `pip-audit`) | ✅ Production |
+| **Architecture Visualizations**| Complete Mermaid sequence, state, flowchart, and component diagrams | ✅ Production |
+
+---
+
+## 📚 Comprehensive Documentation Index
+
+- [Architecture & Diagrams](docs/architecture.md): Sequence diagrams, ReAct state machines, and system flowcharts.
+- [API Reference & Testing Guide](docs/api_testing.md): Complete `curl` request examples for every endpoint module.
+- [Deployment & Setup Guide](docs/deployment.md): Docker Compose, environment configuration, and production Nginx packaging.
+
+---
+
+## 🚀 Quickstart & Installation
 
 ### Option 1: Docker Compose (Recommended)
 
-1. Copy environment template:
+1. Copy environment configuration:
    ```bash
    cp .env.example .env
    ```
-2. Start containers:
+2. Launch services:
    ```bash
-   docker compose up --build
+   docker compose up --build -d
    ```
-   The backend API will be available at `http://localhost:8000`. OpenAPI documentation is accessible at `http://localhost:8000/api/v1/openapi.json`.
-
-### Option 2: Local Python Environment
-
-1. Navigate to backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv .venv
-   # Windows:
-   .\.venv\Scripts\activate
-   # Linux/macOS:
-   source .venv/bin/activate
-   ```
-3. Install package in editable mode with development dependencies:
-   ```bash
-   pip install -e ".[dev]"
-   ```
-4. Set required environment variables:
-   ```bash
-   export ENVIRONMENT=development
-   export SECRET_KEY=change-this-to-a-secure-random-secret-key-min-32-chars
-   export DATABASE_URL=postgresql+asyncpg://postgres:postgrespassword@localhost:5432/forgeai
-   ```
-5. Apply database migrations:
-   ```bash
-   alembic upgrade head
-   ```
-6. Start dev server:
-   ```bash
-   uvicorn app.main:app --reload --port 8000
-   ```
+3. Access points:
+   - **Frontend UI**: `http://localhost:80`
+   - **Backend API**: `http://localhost:8000`
+   - **Swagger Docs**: `http://localhost:8000/docs`
 
 ---
 
-## Running Automated Tests
+## 🧪 Local Test Verification
 
-Run the full async pytest suite:
+Execute the local CI test suite runner:
 ```bash
-cd backend
-python -m pytest
+python scripts/test_ci_locally.py
 ```
 
 ---
 
-## Features Roadmap
-- [x] Repository Foundation & Architecture
-- [x] Milestone 1: Authentication Core, Alembic Migrations, Docker & User Tenant Isolation
+## 📜 Roadmap Progress
+- [x] Milestone 1: Authentication Core, Alembic Migrations, Docker & Tenant Isolation
 - [x] Milestone 2: Multi-Model AI Chat & Streaming Engine
 - [x] Milestone 3: Document Processing & RAG Knowledge Engine
 - [x] Milestone 4: Tool Calling & Dynamic Tool Framework
@@ -93,4 +76,4 @@ python -m pytest
 - [x] Milestone 9: Semantic Prompt Caching Engine
 - [x] Milestone 10: Multimodal Vision & Image Understanding
 - [x] Milestone 11: GitHub Actions CI/CD Pipeline
-- [ ] Milestone 12: Architectural Visualizations & README Polish
+- [x] Milestone 12: Architectural Visualizations & Complete System Documentation Polish

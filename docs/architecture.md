@@ -111,4 +111,19 @@ stateDiagram-v2
     Completed --> [*]
     Terminated --> [*]
 ```
+
+---
+
+## 5. Semantic Prompt Caching & Similarity Lookup Engine
+
+```mermaid
+flowchart TD
+    In[Incoming User Prompt] --> Hash[Generate SHA256 & Embedding Vector]
+    Hash --> Lookup[Query SemanticCacheEntries for (user_id, provider, model)]
+    Lookup --> Compare{Similarity Score >= Threshold (0.92)?}
+    Compare -- Yes (Cache Hit) --> HitReturn[Return Cached Response (<10ms Latency, $0 LLM Cost)]
+    Compare -- No (Cache Miss) --> LLM[Invoke External LLM Provider]
+    LLM --> StoreCache[Store Prompt + Response + Embedding in DB]
+    StoreCache --> OutReturn[Return Fresh LLM Response to User]
+```
 ```

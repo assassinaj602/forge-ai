@@ -126,4 +126,34 @@ flowchart TD
     LLM --> StoreCache[Store Prompt + Response + Embedding in DB]
     StoreCache --> OutReturn[Return Fresh LLM Response to User]
 ```
+
+---
+
+## 6. Model Context Protocol (MCP) Integration Architecture
+
+```mermaid
+graph LR
+    subgraph Client["ForgeAI Application Core"]
+        MCPClient[MCP Client Manager]
+        MCPAdapter[MCP Tool Adapter]
+        AgentEngine[Autonomous Agent Engine]
+    end
+
+    subgraph Transport["JSON-RPC 2.0 Transport"]
+        Stdio[Stdio / Subprocess Pipe]
+        SSETransport[HTTP / SSE Protocol]
+    end
+
+    subgraph Server["External MCP Servers"]
+        ServerA[Filesystem MCP Server]
+        ServerB[Github / Web API MCP Server]
+    end
+
+    AgentEngine --> MCPAdapter
+    MCPAdapter --> MCPClient
+    MCPClient -- JSON-RPC 2.0 --> Stdio
+    MCPClient -- JSON-RPC 2.0 --> SSETransport
+    Stdio --> ServerA
+    SSETransport --> ServerB
+```
 ```

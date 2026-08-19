@@ -59,4 +59,34 @@ graph TD
         I --> J[Construct System Prompt with Injected RAG Context]
         J --> K[LLM Provider Generation Endpoint]
     end
+
+---
+
+## 3. Vector Database Storage Abstraction
+
+```mermaid
+classDiagram
+    class KnowledgeCollection {
+        +String id
+        +String user_id
+        +String name
+        +String description
+        +List~DocumentChunk~ chunks
+    }
+    class DocumentChunk {
+        +String id
+        +String collection_id
+        +String content
+        +List~float~ embedding
+        +Dict metadata
+    }
+    class RAGService {
+        +create_collection(name, user_id)
+        +ingest_document(collection_id, file_content)
+        +query_similar_chunks(collection_id, query_text, top_k)
+    }
+
+    RAGService --> KnowledgeCollection : Manages
+    KnowledgeCollection "1" *-- "many" DocumentChunk : Contains
+```
 ```

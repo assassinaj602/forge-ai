@@ -13,6 +13,7 @@ from app.api.v1.evaluations import router as eval_router
 from app.api.v1.observability import router as obs_router
 from app.api.v1.mcp import router as mcp_router
 from app.api.v1.ws import router as ws_router
+from app.api.v1.audio import router as audio_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -47,3 +48,4 @@ app.include_router(eval_router, prefix=settings.API_V1_STR)
 app.include_router(obs_router, prefix=settings.API_V1_STR)
 app.include_router(mcp_router, prefix=settings.API_V1_STR)
 app.include_router(ws_router, prefix=settings.API_V1_STR)
+app.include_router(audio_router, prefix=settings.API_V1_STR)

@@ -17,6 +17,7 @@ import app.db.models_agent
 import app.db.models_eval
 import app.db.models_mcp
 import app.db.models_cache
+import app.db.models_finetuning
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

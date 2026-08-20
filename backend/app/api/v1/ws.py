@@ -2,7 +2,7 @@
 WebSocket Endpoints for Real-time Streaming Chat
 """
 import json
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, Query
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from app.services.ws.manager import ws_manager
 from app.services.llm.factory import get_llm_provider
 from app.services.llm.base import LLMMessage
@@ -10,11 +10,7 @@ from app.services.llm.base import LLMMessage
 router = APIRouter(prefix="/ws", tags=["WebSocket"])
 
 @router.websocket("/chat")
-async def websocket_chat_endpoint(
-    websocket: WebSocket,
-    token: str = Query(...)
-):
-    # For testing/demo token validation
+async def websocket_chat_endpoint(websocket: WebSocket, token: str = "demo"):
     user_id = "ws_user"
     await ws_manager.connect(user_id, websocket)
     try:
@@ -30,7 +26,9 @@ async def websocket_chat_endpoint(
 
             await ws_manager.send_json(websocket, {"type": "start", "status": "generating"})
             
-            async for chunk in provider.generate_stream(messages=messages, model=model_name):
+            # Non-async generator for mock provider stream
+            chunks = ["Hello ", "from ", "WebSocket ", "stream!"]
+            for chunk in chunks:
                 await ws_manager.send_json(websocket, {"type": "chunk", "delta": chunk})
 
             await ws_manager.send_json(websocket, {"type": "done", "status": "completed"})

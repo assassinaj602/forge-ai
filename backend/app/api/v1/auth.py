@@ -50,3 +50,35 @@ async def login(
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+from pydantic import BaseModel
+from app.services.auth.oauth import OAuth2SocialService
+
+class OAuth2SocialRequest(BaseModel):
+    provider: str  # google, github
+    access_token: str
+
+@router.post("/oauth/social", response_model=Token)
+async def oauth_social_login(
+    req: OAuth2SocialRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        social_info = await OAuth2SocialService.process_social_login(req.provider, req.access_token)
+        # Check or create social user
+        res = await db.execute(select(User).where(User.email == social_info["email"]))
+        user = res.scalar_one_or_none()
+        if not user:
+            user = User(
+                email=social_info["email"],
+                hashed_password=get_password_hash("social_password_oauth_123"),
+                full_name=social_info["full_name"]
+            )
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+
+        access_token = create_access_token(subject=user.id)
+        return {"access_token": access_token, "token_type": "bearer"}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

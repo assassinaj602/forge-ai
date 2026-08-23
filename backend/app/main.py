@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.core.rate_limit import RateLimitMiddleware
+
 from app.api.v1.auth import router as auth_router
 from app.api.v1.conversations import router as conv_router
 from app.api.v1.chat import router as chat_router
@@ -34,6 +36,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
 
 @app.get("/health", tags=["Health"])
 async def health_check():
